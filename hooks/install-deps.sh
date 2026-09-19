@@ -1,14 +1,18 @@
 #!/usr/bin/env bash
 # AllInOne dependency installer — installs whatever is missing via each tool's CLI.
-# Usage: install-deps.sh [--vault <obsidian-vault-path>]
-# Default vault: ~/MyProject/ChasoulUIX-BRAINSTROMING
+# Usage: install-deps.sh [--vault <obsidian-vault-path>] [--os <linux|windows|mac>] [--yes]
+# Interactive on first run: banner + OS selection menu.
 
 set -uo pipefail
 
-VAULT_PATH="${HOME}/MyProject/ChasoulUIX-BRAINSTROMING"
+VAULT_PATH=""
+OS_CHOICE=""
+ASSUME_YES=0
 while [ $# -gt 0 ]; do
   case "$1" in
     --vault) VAULT_PATH="$2"; shift 2 ;;
+    --os)    OS_CHOICE="$2"; shift 2 ;;
+    --yes|-y) ASSUME_YES=1; shift ;;
     *) shift ;;
   esac
 done
@@ -24,6 +28,90 @@ log()  { printf '\033[1;34m[AllInOne]\033[0m %s\n' "$*"; }
 ok()   { printf '\033[1;32m  ✓\033[0m %s\n' "$*"; }
 fail() { printf '\033[1;31m  ✗\033[0m %s\n' "$*"; FAILED+=("$1"); }
 
+# --- Banner ------------------------------------------------------------------
+banner() {
+  printf '\033[1;35m%s\033[0m\n' "  ____ _   _    _    ____ ___ ____ _____ ____      ____  _ 胞_   _  ____  _  ___ ___  _   _ _   _ "
+  printf '\033[1;35m%s\033[0m\n' " / ___| | | |  / \  / ___|_ _/ ___|_   _|  _ \    | __ )| |/ / | || |/ /, )| |/ _ \_ _| \ | | \ | |"
+  printf '\033[1;35m%s\033[0m\n' "| |   | |_| | / _ \| |  _ | |\___ \ | | | |_) |   |  _ \| ' /| || | ' / | | | | | || |  \| |  \| |"
+  printf '\033[1;35m%s\033[0m\n' "| |___|  _  |/ ___ \ |_| || | ___) || | |  _ <    | |_) | . \| || | . \ | | |_| | || | |\  | |\  |"
+  printf '\033[1;35m%s\033[0m\n' " \____|_| |_/_/   \_\____|___|____/ |_| |_| \_\___|____/|_|\_\|_||_|_|\_\|___\___/ |_||_|_| \_|"
+  printf '\033[1;35m%s\033[0m\n' "                                              |_____|                                             "
+  echo
+  printf '\033[1;33m%s\033[0m\n' "  C H A S O U L U I X   B R A I N S T R O M I N G"
+  printf '\033[1;36m%s\033[0m\n' "  A L L   I N   O N E   S K I L L   C L A U D E"
+  echo
+  printf '\033[0;37m%s\033[0m\n' "  Follow Instagram : chasoul.uix"
+  echo
+}
+
+# --- First-run check ---------------------------------------------------------
+FIRST_RUN_MARKER="${CLAUDE_DIR}/.allinone-installed"
+
+# --- OS selection ------------------------------------------------------------
+select_os() {
+  echo "  Select your OS:"
+  echo
+  printf '\033[1;32m  1)\033[0m Linux\n'
+  printf '\033[1;32m  2)\033[0m Windows\n'
+  printf '\033[1;31m  3)\033[0m Mac — \033[1;33mCOMING SOON\033[0m\n'
+  echo
+  while true; do
+    read -r -p "  Choice [1-3]: " choice
+    case "$choice" in
+      1) OS_CHOICE="linux"; break ;;
+      2) OS_CHOICE="windows"; break ;;
+      3)
+        printf '\033[1;33m%s\033[0m\n' "  Mac support is COMING SOON. Follow Instagram : chasoul.uix for updates."
+        exit 0 ;;
+      *) printf '  Invalid. Pick 1, 2, or 3.\n' ;;
+    esac
+  done
+  echo
+}
+
+# --- OS-specific config ------------------------------------------------------
+apply_os() {
+  case "$OS_CHOICE" in
+    linux)
+      # follows ChasoulUIX's own setup
+      VAULT_PATH="${VAULT_PATH:-${HOME}/MyProject/ChasoulUIX-BRAINSTROMING}"
+      log "OS: Linux — vault at ${VAULT_PATH}"
+      ;;
+    windows)
+      # Git Bash / WSL on Windows: vault on C:/ drive, not home
+      VAULT_PATH="${VAULT_PATH:-C:/MyProject/ChasoulUIX-BRAINSTROMING}"
+      log "OS: Windows — vault at ${VAULT_PATH}"
+      ;;
+    *)
+      printf '\033[1;33m%s\033[0m\n' "  Mac support is COMING SOON. Follow Instagram : chasoul.uix for updates."
+      exit 0 ;;
+  esac
+}
+
+# --- Run ---------------------------------------------------------------------
+banner
+
+if [ -f "${FIRST_RUN_MARKER}" ] && [ "${ASSUME_YES}" -eq 0 ]; then
+  log "Not first run — skipping OS selection. (Delete ${FIRST_RUN_MARKER} to redo.)"
+  OS_CHOICE="${OS_CHOICE:-linux}"
+else
+  if [ -z "${OS_CHOICE}" ] && [ "${ASSUME_YES}" -eq 0 ]; then
+    select_os
+  elif [ -z "${OS_CHOICE}" ]; then
+    OS_CHOICE="linux" # non-interactive default
+  fi
+fi
+
+apply_os
+
+read -r -p "  Proceed with install? [y/N]: " confirm
+case "$confirm" in
+  [yY]|[yY][eE][sS]) ;;
+  *) log "Aborted."; exit 1 ;;
+esac
+echo
+
+# --- Dependency checks -------------------------------------------------------
 have_plugin() { grep -q "\"${1}@" "${PLUGINS_JSON}" 2>/dev/null; }
 have_skill()  { [ -f "${CLAUDE_DIR}/skills/${1}/SKILL.md" ] || [ -L "${CLAUDE_DIR}/skills/${1}" ]; }
 have_taste()  { [ -f "${SKILL_LOCK}" ] && grep -q "Leonxlnx/taste-skill" "${SKILL_LOCK}" 2>/dev/null; }
@@ -60,7 +148,6 @@ fi
 
 if have_skill graphify; then ok "graphify skill already installed"; else
   log "Installing graphify…"
-  # skill file
   mkdir -p "${CLAUDE_DIR}/skills/graphify/references"
   if [ -f "${SCRIPT_DIR}/../skills/graphify/SKILL.md" ]; then
     cp "${SCRIPT_DIR}/../skills/graphify/SKILL.md" "${CLAUDE_DIR}/skills/graphify/SKILL.md"
@@ -68,7 +155,6 @@ if have_skill graphify; then ok "graphify skill already installed"; else
   else
     npx -y skills add Leonxlnx/graphify -g -y 2>/dev/null # fallback attempt
   fi
-  # CLI engine (pip package name: graphifyy)
   pip install --user graphifyy >/dev/null 2>&1 || pipx install graphifyy >/dev/null 2>&1
   have_skill graphify && ok "graphify installed" || fail "graphify"
 fi
@@ -85,6 +171,8 @@ echo
 if [ "${#FAILED[@]}" -eq 0 ]; then
   log "All dependencies installed."
   log "Restart Claude Code session to activate plugins & MCP."
+  printf '\033[1;33m%s\033[0m\n' "  Thanks for using AllInOne — Follow Instagram : chasoul.uix"
+  date +%s > "${FIRST_RUN_MARKER}"
   exit 0
 else
   log "Failed: ${FAILED[*]}"
