@@ -30,7 +30,7 @@ fail() { printf '\033[1;31m  ✗\033[0m %s\n' "$*"; FAILED+=("$1"); }
 
 # --- Banner ------------------------------------------------------------------
 banner() {
-  printf '\033[1;35m%s\033[0m\n' "  ____ _   _    _    ____ ___ ____ _____ ____      ____  _ 胞_   _  ____  _  ___ ___  _   _ _   _ "
+  printf '\033[1;35m%s\033[0m\n' "  ____ _   _    _    ____ ___ ____ _____ ____      ____  _   _   _  ____  _  ___ ___  _   _ _   _ "
   printf '\033[1;35m%s\033[0m\n' " / ___| | | |  / \  / ___|_ _/ ___|_   _|  _ \    | __ )| |/ / | || |/ /, )| |/ _ \_ _| \ | | \ | |"
   printf '\033[1;35m%s\033[0m\n' "| |   | |_| | / _ \| |  _ | |\___ \ | | | |_) |   |  _ \| ' /| || | ' / | | | | | || |  \| |  \| |"
   printf '\033[1;35m%s\033[0m\n' "| |___|  _  |/ ___ \ |_| || | ___) || | |  _ <    | |_) | . \| || | . \ | | |_| | || | |\  | |\  |"
@@ -104,12 +104,14 @@ fi
 
 apply_os
 
-read -r -p "  Proceed with install? [y/N]: " confirm
-case "$confirm" in
-  [yY]|[yY][eE][sS]) ;;
-  *) log "Aborted."; exit 1 ;;
-esac
-echo
+if [ "${ASSUME_YES}" -eq 0 ]; then
+  read -r -p "  Proceed with install? [y/N]: " confirm
+  case "$confirm" in
+    [yY]|[yY][eE][sS]) ;;
+    *) log "Aborted."; exit 1 ;;
+  esac
+  echo
+fi
 
 # --- Dependency checks -------------------------------------------------------
 have_plugin() { grep -q "\"${1}@" "${PLUGINS_JSON}" 2>/dev/null; }

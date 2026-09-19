@@ -12,6 +12,22 @@ One skill stack. Two jobs:
 
 ## Bootstrap commands
 
+Setiap kali menjalankan `/allinone`, `/allinone check`, `/allinone install`, atau `/allinone status`, WAJIB tampilkan ASCII banner berikut di awal respon:
+
+```text
+  ____ _   _    _    ____ ___ ____ _____ ____      ____  _   _   _  ____  _  ___ ___  _   _ _   _ 
+ / ___| | | |  / \  / ___|_ _/ ___|_   _|  _ \    | __ )| |/ / | || |/ /, )| |/ _ \_ _| \ | | \ | |
+| |   | |_| | / _ \| |  _ | |\___ \ | | | |_) |   |  _ \| ' /| || | ' / | | | | | || |  \| |  \| |
+| |___|  _  |/ ___ \ |_| || | ___) || | |  _ <    | |_) | . \| || | . \ | | |_| | || | |\  | |\  |
+ \____|_| |_/_/   \_\____|___|____/ |_| |_| \_\___|____/|_|\_\|_||_|_|\_\|___\___/ |_||_|_| \_|
+                                              |_____|                                             
+
+  C H A S O U L U I X   B R A I N S T R O M I N G
+  A L L   I N   O N E   S K I L L   C L A U D E
+
+  Follow Instagram : chasoul.uix
+```
+
 | Command | What it does |
 |---|---|
 | `/allinone check` | Run `hooks/check-deps.sh`, report status table |

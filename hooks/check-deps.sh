@@ -23,7 +23,22 @@ check_skill() {
   [ -f "${CLAUDE_DIR}/skills/${1}/SKILL.md" ] || [ -L "${CLAUDE_DIR}/skills/${1}" ]
 }
 
-# --- Tier 1: mode/process plugins -------------------------------------------
+banner() {
+  printf '\033[1;35m%s\033[0m\n' "  ____ _   _    _    ____ ___ ____ _____ ____      ____  _   _   _  ____  _  ___ ___  _   _ _   _ "
+  printf '\033[1;35m%s\033[0m\n' " / ___| | | |  / \  / ___|_ _/ ___|_   _|  _ \    | __ )| |/ / | || |/ /, )| |/ _ \_ _| \ | | \ | |"
+  printf '\033[1;35m%s\033[0m\n' "| |   | |_| | / _ \| |  _ | |\___ \ | | | |_) |   |  _ \| ' /| || | ' / | | | | | || |  \| |  \| |"
+  printf '\033[1;35m%s\033[0m\n' "| |___|  _  |/ ___ \ |_| || | ___) || | |  _ <    | |_) | . \| || | . \ | | |_| | || | |\  | |\  |"
+  printf '\033[1;35m%s\033[0m\n' " \____|_| |_/_/   \_\____|___|____/ |_| |_| \_\___|____/|_|\_\|_||_|_|\_\|___\___/ |_||_|_| \_|"
+  printf '\033[1;35m%s\033[0m\n' "                                              |_____|                                             "
+  echo
+  printf '\033[1;33m%s\033[0m\n' "  C H A S O U L U I X   B R A I N S T R O M I N G"
+  printf '\033[1;36m%s\033[0m\n' "  A L L   I N   O N E   S K I L L   C L A U D E"
+  echo
+  printf '\033[0;37m%s\033[0m\n' "  Follow Instagram : chasoul.uix"
+  echo
+}
+
+[ -n "$QUIET" ] || banner
 check_plugin caveman      || missing+=("caveman")
 check_plugin ponytail     || missing+=("ponytail")
 check_plugin superpowers  || missing+=("superpowers")
