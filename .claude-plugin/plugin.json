@@ -1,0 +1,15 @@
+{
+  "name": "allinone",
+  "description": "All-in-One Claude Code skill stack: dependency checker + installer (caveman, ponytail, superpowers, taste-skill, graphify, obsidian) with hybrid embedded rules and skill dispatcher",
+  "version": "0.1.0",
+  "author": {
+    "name": "ChasoulUIX"
+  },
+  "license": "MIT",
+  "keywords": [
+    "skills",
+    "dependencies",
+    "installer",
+    "workflow"
+  ]
+}

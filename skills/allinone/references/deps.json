@@ -1,0 +1,56 @@
+{
+  "version": 1,
+  "install_order": ["caveman", "ponytail", "superpowers", "taste-skill", "graphify", "obsidian"],
+  "tiers": {
+    "tier1_mode_process": ["caveman", "ponytail", "superpowers"],
+    "tier2_knowledge_design": ["taste-skill", "graphify", "obsidian"]
+  },
+  "dependencies": {
+    "caveman": {
+      "type": "plugin",
+      "marketplace": "juliusbrussee/caveman",
+      "plugin": "caveman@caveman",
+      "check": "grep '\"caveman@' ~/.claude/plugins/installed_plugins.json",
+      "purpose": "Terse output mode, 65% token cut"
+    },
+    "ponytail": {
+      "type": "plugin",
+      "marketplace": "dietrichgebert/ponytail",
+      "plugin": "ponytail@ponytail",
+      "check": "grep '\"ponytail@' ~/.claude/plugins/installed_plugins.json",
+      "purpose": "Lazy minimal-solution ladder"
+    },
+    "superpowers": {
+      "type": "plugin",
+      "marketplace": "anthropics/claude-plugins-official",
+      "plugin": "superpowers@claude-plugins-official",
+      "check": "grep '\"superpowers@' ~/.claude/plugins/installed_plugins.json",
+      "purpose": "Process skills: brainstorming, TDD, debugging"
+    },
+    "taste-skill": {
+      "type": "skills-cli",
+      "source": "Leonxlnx/taste-skill",
+      "install": "npx -y skills add Leonxlnx/taste-skill -g -y",
+      "check": "grep 'Leonxlnx/taste-skill' ~/.agents/.skill-lock.json || ls ~/.claude/skills/design-taste-frontend/SKILL.md",
+      "provides": ["design-taste-frontend", "gpt-taste", "high-end-visual-design", "brandkit", "minimalist-ui", "industrial-brutalist-ui", "stitch-design-taste", "imagegen-frontend-web", "imagegen-frontend-mobile", "image-to-code", "redesign-existing-projects", "full-output-enforcement", "design-taste-frontend-v1"],
+      "purpose": "Design taste family for frontend work"
+    },
+    "graphify": {
+      "type": "vendored-skill",
+      "skill_dir": "skills/graphify",
+      "cli_package": "graphifyy",
+      "install": "pip install --user graphifyy (or pipx install graphifyy)",
+      "check": "ls ~/.claude/skills/graphify/SKILL.md",
+      "purpose": "Codebase to knowledge graph, query-first context"
+    },
+    "obsidian": {
+      "type": "mcp-server",
+      "server": "obsidian-vault",
+      "command": "npx -y @modelcontextprotocol/server-filesystem <vault-path>",
+      "install": "claude mcp add obsidian-vault -s user -- npx -y @modelcontextprotocol/server-filesystem <vault-path>",
+      "check": "grep obsidian ~/.claude.json",
+      "default_vault": "~/MyProject/ChasoulUIX-BRAINSTROMING",
+      "purpose": "Vault read/write for notes and documentation"
+    }
+  }
+}

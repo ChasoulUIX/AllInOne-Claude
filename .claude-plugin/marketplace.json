@@ -1,0 +1,16 @@
+{
+  "$schema": "https://anthropic.com/claude-code/marketplace.schema.json",
+  "name": "allinone",
+  "description": "All-in-One Claude Code skill stack: dependency checker, installer, and unified rules layer",
+  "owner": {
+    "name": "ChasoulUIX"
+  },
+  "plugins": [
+    {
+      "name": "allinone",
+      "description": "Check + install the full skill stack (caveman, ponytail, superpowers, taste-skill, graphify, obsidian) and run them as one.",
+      "source": "./",
+      "category": "productivity"
+    }
+  ]
+}
