@@ -1,46 +1,51 @@
 {
-  "version": 1,
-  "install_order": ["caveman", "ponytail", "superpowers", "taste-skill", "graphify", "obsidian"],
+  "version": 2,
+  "architecture": "vendored",
+  "install_order": ["caveman", "ponytail", "superpowers", "taste-skill", "graphify-skill", "graphify-cli", "obsidian"],
   "tiers": {
-    "tier1_mode_process": ["caveman", "ponytail", "superpowers"],
-    "tier2_knowledge_design": ["taste-skill", "graphify", "obsidian"]
+    "tier1_vendored_plugins": ["caveman", "ponytail", "superpowers", "taste-skill", "graphify"],
+    "tier2_external": ["graphify CLI", "obsidian MCP"]
   },
   "dependencies": {
     "caveman": {
-      "type": "plugin",
-      "marketplace": "juliusbrussee/caveman",
-      "plugin": "caveman@caveman",
-      "check": "grep '\"caveman@' ~/.claude/plugins/installed_plugins.json",
+      "type": "vendored-plugin",
+      "plugin_dir": "plugins/caveman",
+      "origin": "juliusbrussee/caveman (MIT; engine/BSL parts excluded)",
+      "install": "claude plugin install caveman@allinone",
+      "check": "grep '\"caveman@allinone\"' ~/.claude/plugins/installed_plugins.json",
       "purpose": "Terse output mode, 65% token cut"
     },
     "ponytail": {
-      "type": "plugin",
-      "marketplace": "dietrichgebert/ponytail",
-      "plugin": "ponytail@ponytail",
-      "check": "grep '\"ponytail@' ~/.claude/plugins/installed_plugins.json",
+      "type": "vendored-plugin",
+      "plugin_dir": "plugins/ponytail",
+      "origin": "dietrichgebert/ponytail (MIT)",
+      "install": "claude plugin install ponytail@allinone",
+      "check": "grep '\"ponytail@allinone\"' ~/.claude/plugins/installed_plugins.json",
       "purpose": "Lazy minimal-solution ladder"
     },
     "superpowers": {
-      "type": "plugin",
-      "marketplace": "anthropics/claude-plugins-official",
-      "plugin": "superpowers@claude-plugins-official",
-      "check": "grep '\"superpowers@' ~/.claude/plugins/installed_plugins.json",
+      "type": "vendored-plugin",
+      "plugin_dir": "plugins/superpowers",
+      "origin": "obra/superpowers (MIT)",
+      "install": "claude plugin install superpowers@allinone",
+      "check": "grep '\"superpowers@allinone\"' ~/.claude/plugins/installed_plugins.json",
       "purpose": "Process skills: brainstorming, TDD, debugging"
     },
     "taste-skill": {
-      "type": "skills-cli",
-      "source": "Leonxlnx/taste-skill",
-      "install": "npx -y skills add Leonxlnx/taste-skill -g -y",
-      "check": "grep 'Leonxlnx/taste-skill' ~/.agents/.skill-lock.json || ls ~/.claude/skills/design-taste-frontend/SKILL.md",
+      "type": "vendored-plugin",
+      "plugin_dir": "plugins/taste-skill",
+      "origin": "Leonxlnx/taste-skill (MIT)",
+      "install": "claude plugin install taste-skill@allinone",
+      "check": "grep '\"taste-skill@allinone\"' ~/.claude/plugins/installed_plugins.json",
       "provides": ["design-taste-frontend", "gpt-taste", "high-end-visual-design", "brandkit", "minimalist-ui", "industrial-brutalist-ui", "stitch-design-taste", "imagegen-frontend-web", "imagegen-frontend-mobile", "image-to-code", "redesign-existing-projects", "full-output-enforcement", "design-taste-frontend-v1"],
       "purpose": "Design taste family for frontend work"
     },
     "graphify": {
-      "type": "vendored-skill",
-      "skill_dir": "skills/graphify",
+      "type": "vendored-plugin + external CLI",
+      "plugin_dir": "plugins/graphify",
       "cli_package": "graphifyy",
-      "install": "pip install --user graphifyy (or pipx install graphifyy)",
-      "check": "ls ~/.claude/skills/graphify/SKILL.md",
+      "install": "claude plugin install graphify@allinone && pip install --user graphifyy",
+      "check": "grep '\"graphify@allinone\"' ~/.claude/plugins/installed_plugins.json && command -v graphify",
       "purpose": "Codebase to knowledge graph, query-first context"
     },
     "obsidian": {

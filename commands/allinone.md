@@ -21,11 +21,12 @@ Present the result as a table:
 
 | Dependency | Type | Status |
 |---|---|---|
-| caveman | plugin | ✓ / ✗ |
-| ponytail | plugin | ✓ / ✗ |
-| superpowers | plugin | ✓ / ✗ |
-| taste-skill | skills-cli | ✓ / ✗ |
-| graphify | skill+CLI | ✓ / ✗ |
+| caveman | vendored plugin | ✓ / ✗ |
+| ponytail | vendored plugin | ✓ / ✗ |
+| superpowers | vendored plugin | ✓ / ✗ |
+| taste-skill | vendored plugin | ✓ / ✗ |
+| graphify skill | vendored plugin | ✓ / ✗ |
+| graphify CLI | pip (graphifyy) | ✓ / ✗ |
 | obsidian | MCP | ✓ / ✗ |
 
 If anything is missing, tell the user to run `/allinone install` (ask first — never install without consent).
@@ -38,10 +39,13 @@ Confirm with the user, then run:
 bash "${CLAUDE_PLUGIN_ROOT}/hooks/install-deps.sh" [--vault <path>]
 ```
 
+- caveman/ponytail/superpowers/taste-skill/graphify install from this repo's own marketplace (vendored, no third-party download).
+- graphify CLI installs via `pip install --user graphifyy`.
+- Obsidian MCP registers via `claude mcp add obsidian-vault`.
 - Default vault is `~/MyProject/ChasoulUIX-BRAINSTROMING`; ask the user for their vault path if they haven't given one.
 - After install: tell the user to restart the Claude Code session so plugins and MCP activate.
 - If any install step failed, show the failed list and point to README troubleshooting.
 
 ## Both
 
-After any run, remind: once all dependencies are green, Part A rules of the allinone skill are in effect and Part B dispatches to the original skills.
+After any run, remind: once all dependencies are green, Part A rules of the allinone skill are in effect and Part B dispatches to the installed skills.

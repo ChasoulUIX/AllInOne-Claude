@@ -31,10 +31,10 @@ Setiap kali menjalankan `/allinone`, `/allinone check`, `/allinone install`, ata
 | Command | What it does |
 |---|---|
 | `/allinone check` | Run `hooks/check-deps.sh`, report status table |
-| `/allinone install` | Run `hooks/install-deps.sh [--vault <path>]`, install missing via CLI |
+| `/allinone install` | Run `hooks/install-deps.sh [--vault <path>]`, install missing pieces |
 | `/allinone status` | Same as check, plus versions where cheap to get |
 
-Installation order (user's spec): caveman → ponytail → superpowers → taste-skill → graphify → obsidian.
+**Vendored architecture** — caveman, ponytail, superpowers, taste-skill, and graphify's skill layer ship inside this repo as plugins under `plugins/`. `/allinone install` registers this repo's marketplace and installs all five locally — no download from third-party repos. Only two things still install from outside: graphify CLI (`pip install graphifyy`) and obsidian-vault MCP (`claude mcp add`).
 
 ---
 

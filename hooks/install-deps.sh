@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
-# AllInOne dependency installer — installs whatever is missing via each tool's CLI.
+# AllInOne installer — vendored stack. caveman/ponytail/superpowers/taste-skill/graphify
+# ship inside this repo as plugins; only obsidian MCP + graphify CLI need external setup.
 # Usage: install-deps.sh [--vault <obsidian-vault-path>] [--os <linux|windows|mac>] [--yes]
-# Interactive on first run: banner + OS selection menu.
 
 set -uo pipefail
 
@@ -17,10 +17,8 @@ while [ $# -gt 0 ]; do
   esac
 done
 
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 CLAUDE_DIR="${HOME}/.claude"
-PLUGINS_JSON="${CLAUDE_DIR}/plugins/installed_plugins.json"
-SKILL_LOCK="${HOME}/.agents/.skill-lock.json"
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 INSTALLED=()
 FAILED=()
 
@@ -73,12 +71,10 @@ select_os() {
 apply_os() {
   case "$OS_CHOICE" in
     linux)
-      # follows ChasoulUIX's own setup
       VAULT_PATH="${VAULT_PATH:-${HOME}/MyProject/ChasoulUIX-BRAINSTROMING}"
       log "OS: Linux — vault at ${VAULT_PATH}"
       ;;
     windows)
-      # Git Bash / WSL on Windows: vault on C:/ drive, not home
       VAULT_PATH="${VAULT_PATH:-C:/MyProject/ChasoulUIX-BRAINSTROMING}"
       log "OS: Windows — vault at ${VAULT_PATH}"
       ;;
@@ -113,73 +109,68 @@ if [ "${ASSUME_YES}" -eq 0 ]; then
   echo
 fi
 
-# --- Dependency checks -------------------------------------------------------
-have_plugin() { grep -q "\"${1}@" "${PLUGINS_JSON}" 2>/dev/null; }
-have_skill()  { [ -f "${CLAUDE_DIR}/skills/${1}/SKILL.md" ] || [ -L "${CLAUDE_DIR}/skills/${1}" ]; }
-have_taste()  { [ -f "${SKILL_LOCK}" ] && grep -q "Leonxlnx/taste-skill" "${SKILL_LOCK}" 2>/dev/null; }
-have_obsidian() { grep -q "obsidian" "${HOME}/.claude.json" 2>/dev/null || grep -q "obsidian" "${CLAUDE_DIR}/.mcp.json" 2>/dev/null; }
+# --- Tier 1: vendored plugins — install all six from this repo's marketplace ----
+log "Tier 1 — vendored plugins (caveman, ponytail, superpowers, taste-skill, graphify)"
 
-# --- Tier 1: plugins ---------------------------------------------------------
-log "Tier 1 — mode & process plugins"
+PLUGIN_ROOT_DIR="${CLAUDE_PLUGIN_ROOT:-$(cd "${SCRIPT_DIR}/.." && pwd)}"
 
-if have_plugin caveman; then ok "caveman already installed"; else
-  log "Installing caveman (juliusbrussee/caveman)…"
-  claude plugin marketplace add juliusbrussee/caveman >/dev/null 2>&1
-  claude plugin install caveman@caveman >/dev/null 2>&1 && ok "caveman installed" || fail "caveman"
+# register self-marketplace if missing
+if ! grep -q '"allinone"' "${HOME}/.claude/plugins/known_marketplaces.json" 2>/dev/null \
+   && ! claude plugin marketplace list 2>/dev/null | grep -q "allinone"; then
+  log "Registering marketplace allinone…"
+  claude plugin marketplace add "${PLUGIN_ROOT_DIR}" >/dev/null 2>&1 || true
 fi
 
-if have_plugin ponytail; then ok "ponytail already installed"; else
-  log "Installing ponytail (dietrichgebert/ponytail)…"
-  claude plugin marketplace add dietrichgebert/ponytail >/dev/null 2>&1
-  claude plugin install ponytail@ponytail >/dev/null 2>&1 && ok "ponytail installed" || fail "ponytail"
-fi
-
-if have_plugin superpowers; then ok "superpowers already installed"; else
-  log "Installing superpowers (anthropics/claude-plugins-official)…"
-  claude plugin marketplace add anthropics/claude-plugins-official >/dev/null 2>&1
-  claude plugin install superpowers@claude-plugins-official >/dev/null 2>&1 && ok "superpowers installed" || fail "superpowers"
-fi
-
-# --- Tier 2: skills & MCP ----------------------------------------------------
-log "Tier 2 — knowledge, design, graph, vault"
-
-if have_taste; then ok "taste-skill already installed"; else
-  log "Installing taste-skill (Leonxlnx/taste-skill) via npx skills…"
-  npx -y skills add Leonxlnx/taste-skill -g -y >/dev/null 2>&1 && ok "taste-skill installed" || fail "taste-skill"
-fi
-
-if have_skill graphify; then ok "graphify skill already installed"; else
-  log "Installing graphify…"
-  mkdir -p "${CLAUDE_DIR}/skills/graphify/references"
-  if [ -f "${SCRIPT_DIR}/../skills/graphify/SKILL.md" ]; then
-    cp "${SCRIPT_DIR}/../skills/graphify/SKILL.md" "${CLAUDE_DIR}/skills/graphify/SKILL.md"
-    cp -r "${SCRIPT_DIR}/../skills/graphify/references/." "${CLAUDE_DIR}/skills/graphify/references/" 2>/dev/null
+for p in caveman ponytail superpowers taste-skill graphify; do
+  if grep -q "\"${p}@allinone\"" "${CLAUDE_DIR}/plugins/installed_plugins.json" 2>/dev/null; then
+    ok "${p} already installed"
   else
-    npx -y skills add Leonxlnx/graphify -g -y 2>/dev/null # fallback attempt
+    log "Installing ${p}@allinone…"
+    if claude plugin install "${p}@allinone" -y >/dev/null 2>&1; then
+      ok "${p} installed"
+    else
+      fail "${p}"
+    fi
   fi
-  pip install --user graphifyy >/dev/null 2>&1 || pipx install graphifyy >/dev/null 2>&1
-  have_skill graphify && ok "graphify installed" || fail "graphify"
+done
+
+# --- Tier 2: external deps — graphify CLI + obsidian MCP ----------------------
+log "Tier 2 — external deps (graphify CLI, obsidian-vault MCP)"
+
+# graphify CLI (pip package graphifyy)
+if command -v graphify >/dev/null 2>&1; then
+  ok "graphify CLI already installed ($(graphify --version 2>/dev/null || echo 'version unknown'))"
+else
+  log "Installing graphify CLI (pip package graphifyy)…"
+  if pip install --user graphifyy >/dev/null 2>&1 || pipx install graphifyy >/dev/null 2>&1 || pip install graphifyy >/dev/null 2>&1; then
+    ok "graphify CLI installed"
+  else
+    fail "graphify CLI — try: pip install --user graphifyy"
+  fi
 fi
 
-if have_obsidian; then ok "obsidian-vault MCP already configured"; else
+# obsidian-vault MCP
+if grep -q "obsidian" "${HOME}/.claude.json" 2>/dev/null || grep -q "obsidian" "${CLAUDE_DIR}/.mcp.json" 2>/dev/null; then
+  ok "obsidian-vault MCP already configured"
+else
   log "Configuring obsidian-vault MCP (filesystem → ${VAULT_PATH})…"
   mkdir -p "${VAULT_PATH}"
-  claude mcp add obsidian-vault -s user -- npx -y @modelcontextprotocol/server-filesystem "${VAULT_PATH}" >/dev/null 2>&1 \
-    && ok "obsidian-vault MCP added (vault: ${VAULT_PATH})" || fail "obsidian"
+  if claude mcp add obsidian-vault -s user -- npx -y @modelcontextprotocol/server-filesystem "${VAULT_PATH}" >/dev/null 2>&1; then
+    ok "obsidian-vault MCP added (vault: ${VAULT_PATH})"
+  else
+    fail "obsidian MCP"
+  fi
 fi
 
 # --- CLAUDE.md rules injection ------------------------------------------------
-# Tambahkan aturan AllInOne ke ~/.claude/CLAUDE.md user (append, tidak menimpa).
 CLAUDE_MD="${HOME}/.claude/CLAUDE.md"
 RULES_TEMPLATE="${SCRIPT_DIR}/../templates/CLAUDE.md.template"
 
 inject_claude_md() {
-  # windows path: C:/... → tampil apa adanya; linux/mac biarkan
   local vault_display="${VAULT_PATH/#$HOME/~}"
   if [ ! -f "${RULES_TEMPLATE}" ]; then
     return 1
   fi
-  # skip jika sudah pernah diinject
   if [ -f "${CLAUDE_MD}" ] && grep -q "ATURAN PRIORITAS UTAMA" "${CLAUDE_MD}" 2>/dev/null; then
     ok "CLAUDE.md rules sudah ada (skip)"
     return 0

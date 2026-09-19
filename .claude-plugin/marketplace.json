@@ -1,16 +1,46 @@
 {
   "$schema": "https://anthropic.com/claude-code/marketplace.schema.json",
   "name": "allinone",
-  "description": "All-in-One Claude Code skill stack: dependency checker, installer, and unified rules layer",
+  "description": "All-in-One Claude Code skill stack: caveman, ponytail, superpowers, taste-skill, graphify vendored as one install — plus obsidian-vault MCP bootstrap",
   "owner": {
     "name": "ChasoulUIX"
   },
   "plugins": [
     {
       "name": "allinone",
-      "description": "Check + install the full skill stack (caveman, ponytail, superpowers, taste-skill, graphify, obsidian) and run them as one.",
+      "description": "Meta layer: unified rules, /allinone check|install, obsidian MCP + graphify CLI bootstrap. The other plugins below ship with it.",
       "source": "./",
       "category": "productivity"
+    },
+    {
+      "name": "caveman",
+      "description": "Ultra-compressed communication mode. Shortens prose while preserving technical terms, code, commands, and exact errors. Vendored from juliusbrussee/caveman (MIT).",
+      "source": "./plugins/caveman",
+      "category": "productivity"
+    },
+    {
+      "name": "ponytail",
+      "description": "Lazy senior dev mode. Forces the simplest, shortest solution that actually works: YAGNI, stdlib first, no unrequested abstractions. Vendored from dietrichgebert/ponytail (MIT).",
+      "source": "./plugins/ponytail",
+      "category": "productivity"
+    },
+    {
+      "name": "superpowers",
+      "description": "Core skills library: TDD, debugging, brainstorming, collaboration patterns, and proven techniques. Vendored from obra/superpowers (MIT).",
+      "source": "./plugins/superpowers",
+      "category": "development"
+    },
+    {
+      "name": "taste-skill",
+      "description": "Frontend design taste skills: brutalist, minimalist, soft, redesign, stitch, imagegen, and more. Vendored from Leonxlnx/taste-skill (MIT).",
+      "source": "./plugins/taste-skill",
+      "category": "productivity"
+    },
+    {
+      "name": "graphify",
+      "description": "Codebase to knowledge graph with god nodes, community detection, and query tools. Skill vendored; CLI (graphifyy) installed via pip on first run.",
+      "source": "./plugins/graphify",
+      "category": "development"
     }
   ]
 }

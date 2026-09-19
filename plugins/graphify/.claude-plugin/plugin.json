@@ -1,0 +1,9 @@
+{
+  "name": "graphify",
+  "version": "0.1.0",
+  "description": "Codebase to knowledge graph with god nodes, community detection, and query tools. Skill layer only — CLI (graphifyy) installed via pip.",
+  "author": {
+    "name": "ChasoulUIX"
+  },
+  "license": "MIT"
+}
