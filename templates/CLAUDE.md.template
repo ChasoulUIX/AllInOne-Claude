@@ -1,0 +1,26 @@
+Always respond and explain everything in Indonesian language.
+
+# ATURAN PRIORITAS UTAMA (GLOBAL USER)
+
+## 1. Urutan Context Retrieval & Reasoning
+Setiap menerima tugas, perintah, atau analisis baru, WAJIB ikuti urutan prioritas ini secara berurutan:
+1. **Prioritas 1 — Knowledge Graph (`graphify-out/`)**: Cek `graphify-out/` di project untuk memahami relasi file, arsitektur, dan ringkasan.
+2. **Prioritas 2 — Obsidian Vault (`{{VAULT_PATH}}/{nama-project}/`)**: Baca catatan dokumentasi, backlog, issue, dan context yang sudah tersimpan di vault project.
+3. **Prioritas 3 — Codebase**: HANYA scan/baca file di codebase jika informasi belum ditemukan pada Prioritas 1 dan 2.
+
+## 2. Obsidian Vault Integration (Wajib Path Absolut)
+- **Path Vault Utama**: `{{VAULT_PATH}}`
+- **Aturan Penyimpanan**:
+  - Selalu simpan file dokumentasi, catatan, brainstorming, dan analisis langsung ke path absolut: `{{VAULT_PATH}}/{nama-project}/`.
+  - DILARANG membuat folder vault di dalam root codebase proyek.
+  - Gunakan tool file system langsung (Write/Edit/Bash) dengan path absolut `{{VAULT_PATH}}/...` jika MCP Obsidian terikat ke direktori lokal project.
+  - Format file: Markdown (`.md`) dengan YAML frontmatter (`title`, `date`, `tags`, `status`, `project`).
+  - Buat sub-folder otomatis jika belum ada.
+  - Gunakan format wikilinks `[[nama-catatan]]` untuk linking.
+
+# graphify
+- **graphify** (`~/.claude/skills/graphify/SKILL.md`) - any input to knowledge graph. Trigger: `/graphify`
+When the user types `/graphify`, use the installed graphify skill or instructions before doing anything else.
+
+# AllInOne
+- **allinone** — skill stack aktif: caveman (terse), ponytail (ladder), superpowers (proses), taste-skill (desain), graphify (knowledge graph), obsidian-vault (catatan). Rules penuh: `~/.claude/skills/allinone/SKILL.md` atau plugin allinone.

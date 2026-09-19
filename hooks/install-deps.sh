@@ -166,6 +166,32 @@ if have_obsidian; then ok "obsidian-vault MCP already configured"; else
     && ok "obsidian-vault MCP added (vault: ${VAULT_PATH})" || fail "obsidian"
 fi
 
+# --- CLAUDE.md rules injection ------------------------------------------------
+# Tambahkan aturan AllInOne ke ~/.claude/CLAUDE.md user (append, tidak menimpa).
+CLAUDE_MD="${HOME}/.claude/CLAUDE.md"
+RULES_TEMPLATE="${SCRIPT_DIR}/../templates/CLAUDE.md.template"
+
+inject_claude_md() {
+  # windows path: C:/... → tampil apa adanya; linux/mac biarkan
+  local vault_display="${VAULT_PATH/#$HOME/~}"
+  if [ ! -f "${RULES_TEMPLATE}" ]; then
+    return 1
+  fi
+  # skip jika sudah pernah diinject
+  if [ -f "${CLAUDE_MD}" ] && grep -q "ATURAN PRIORITAS UTAMA" "${CLAUDE_MD}" 2>/dev/null; then
+    ok "CLAUDE.md rules sudah ada (skip)"
+    return 0
+  fi
+  sed "s|{{VAULT_PATH}}|${vault_display}|g" "${RULES_TEMPLATE}" >> "${CLAUDE_MD}"
+  ok "CLAUDE.md rules ditambahkan (vault: ${vault_display})"
+}
+
+if [ -f "${CLAUDE_MD}" ] || mkdir -p "${CLAUDE_DIR}" 2>/dev/null; then
+  inject_claude_md || fail "claude-md"
+else
+  fail "claude-md"
+fi
+
 # --- Summary -----------------------------------------------------------------
 echo
 if [ "${#FAILED[@]}" -eq 0 ]; then
