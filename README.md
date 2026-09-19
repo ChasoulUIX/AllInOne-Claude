@@ -18,7 +18,7 @@ One install, full Claude Code skill stack. Checks and installs six dependencies,
 ### Option A — Claude Code plugin (recommended)
 
 ```bash
-claude plugin marketplace add <your-github>/AllInOne-Claude
+claude plugin marketplace add ChasoulUIX/AllInOne-Claude
 claude plugin install allinone@allinone
 ```
 
@@ -27,7 +27,7 @@ Restart the session. The SessionStart hook checks dependencies automatically.
 ### Option B — skills CLI
 
 ```bash
-npx skills add <your-github>/AllInOne-Claude -g -y
+npx skills add ChasoulUIX/AllInOne-Claude -g -y
 ```
 
 Note: option B installs the skill files only — no SessionStart hook. Run `/allinone check` manually.
